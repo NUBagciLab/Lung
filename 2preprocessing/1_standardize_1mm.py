@@ -23,11 +23,16 @@ def resample_to_1mm(input_folder, output_folder):
                     nib.save(img, output_path)
                     print(f"Copied {file} to {output_path} (no resampling needed)")
                 else:
-                    # correct zoom factor calculation
+                    # calculate zoom factors for resampling
                     zoom_factors = [original / target for original, target in zip(pixel_dims, (1.0, 1.0, 1.0))]
                     img_data = img.get_fdata()
                     resampled_data = zoom(img_data, zoom_factors, mode="nearest", order=3)
-                    new_img = nib.Nifti1Image(resampled_data, affine=img.affine)
+
+                    # adjust affine matrix for new voxel sizes
+                    new_affine = np.copy(img.affine)
+                    new_affine[:3, :3] *= np.diag([1/factor for factor in zoom_factors])
+
+                    new_img = nib.Nifti1Image(resampled_data, affine=new_affine)
                     new_img.header.set_zooms((1.0, 1.0, 1.0))
                     nib.save(new_img, output_path)
                     print(f"Resampled {file} and saved to {output_path}")
