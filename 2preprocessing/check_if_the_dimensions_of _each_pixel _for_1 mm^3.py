@@ -9,7 +9,7 @@ for filename in os.listdir(folder_path):
         try:
             nii = nib.load(file_path)
             sx, sy, sz = nii.header.get_zooms()
-            if abs(sx - 1.0) < 1e-20 and abs(sy - 1.0) < 1e-20 and abs(sz - 1.0) < 1e-20:
+            if abs(sx - 1.0) < 1e-10 and abs(sy - 1.0) < 1e-10 and abs(sz - 1.0) < 1e-10:
                 print(f"{filename}: Voxel sizes are approximately 1 mm³.")
             else:
                 print(f"{filename}: Voxel sizes are not 1 mm³.")
